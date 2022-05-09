@@ -1,0 +1,31 @@
+{% extends '@layout/default.html.twig' %}
+
+{% block title %}Product List{% endblock %}
+{% block page_title %}{% endblock %}
+
+{% block body_class %}user-form{% endblock %}
+
+{% block content %}
+
+    <span><h1 class="d-inline">Product List</h1><button class="btn btn-info d-inline mr-5" id="cartDisplay" style="float:right;width:75px;height:50px"><i class="fas fa-shopping-cart"></i></button></span>
+    <hr>
+    <div class="container">
+        {% for product in products %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card  bg-dark" style="">
+                    <img class="d-inline card-img-top" src="{{ product.image }}" alt="Card image cap">
+                    <span class="d-inline card-body">
+                        <h3 class="card-title text-white"><b>{{ product.product }}</b></h3>
+                        <p class="card-text description" >{{ product.description }}</p>
+                        <h4 class="card-text text-info price">{{ product.price }} RON</h4>
+                        <input type="submit" value="Add to cart" class="cartButton" data-uuid="{{ product.uuid }}">
+                    </span>
+                </div>
+            </div>
+        </div>
+            <br>
+        {% endfor %}
+    </div>
+
+{% endblock %}

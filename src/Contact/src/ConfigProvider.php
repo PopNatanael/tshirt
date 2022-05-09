@@ -10,6 +10,8 @@ use Frontend\Contact\Controller\ContactController;
 use Frontend\Contact\Form\ContactForm;
 use Frontend\Contact\Service\MessageService;
 use Frontend\Contact\Service\MessageServiceInterface;
+use Frontend\Contact\Service\ProductService;
+use Frontend\Contact\Service\ProductServiceInterface;
 use Laminas\Form\ElementFactory;
 use Mezzio\Application;
 
@@ -46,9 +48,11 @@ class ConfigProvider
             'factories'  => [
                 ContactController::class => AnnotatedServiceFactory::class,
                 MessageService::class => AnnotatedServiceFactory::class,
+                ProductService::class => AnnotatedServiceFactory::class
             ],
             'aliases' => [
                 MessageServiceInterface::class => MessageService::class,
+                ProductServiceInterface::class => ProductService::class,
             ]
         ];
     }

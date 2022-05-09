@@ -11,6 +11,7 @@ use Dot\Mail\Exception\MailException;
 use Fig\Http\Message\RequestMethodInterface;
 use Frontend\Contact\Form\ContactForm;
 use Frontend\Contact\Service\MessageService;
+use Frontend\Contact\Service\ProductServiceInterface;
 use Frontend\Plugin\FormsPlugin;
 use Laminas\Authentication\AuthenticationService;
 use Laminas\Authentication\AuthenticationServiceInterface;
@@ -34,6 +35,9 @@ class ContactController extends AbstractActionController
     /** @var AuthenticationServiceInterface $authenticationService */
     protected AuthenticationServiceInterface $authenticationService;
 
+    /** @var ProductServiceInterface $productService */
+    protected ProductServiceInterface $productService;
+
     /** @var FlashMessenger $messenger */
     protected FlashMessenger $messenger;
 
@@ -49,6 +53,7 @@ class ContactController extends AbstractActionController
      * @param RouterInterface $router
      * @param TemplateRendererInterface $template
      * @param AuthenticationService $authenticationService
+     * @param ProductServiceInterface $productService
      * @param FlashMessenger $messenger
      * @param FormsPlugin $forms
      * @Inject({
@@ -56,24 +61,28 @@ class ContactController extends AbstractActionController
      *     RouterInterface::class,
      *     TemplateRendererInterface::class,
      *     AuthenticationService::class,
+     *     ProductServiceInterface::class,
      *     FlashMessenger::class,
      *     FormsPlugin::class,
      *     "config"
      *     })
      */
     public function __construct(
-        MessageService $messageService,
-        RouterInterface $router,
+        MessageService            $messageService,
+        RouterInterface           $router,
         TemplateRendererInterface $template,
-        AuthenticationService $authenticationService,
-        FlashMessenger $messenger,
-        FormsPlugin $forms,
-        array $config = []
-    ) {
+        AuthenticationService     $authenticationService,
+        ProductServiceInterface   $productService,
+        FlashMessenger            $messenger,
+        FormsPlugin               $forms,
+        array                     $config = []
+    )
+    {
         $this->messageService = $messageService;
         $this->router = $router;
         $this->template = $template;
         $this->authenticationService = $authenticationService;
+        $this->productService = $productService;
         $this->messenger = $messenger;
         $this->forms = $forms;
         $this->config = $config;
@@ -126,6 +135,37 @@ class ContactController extends AbstractActionController
         return new HtmlResponse($this->template->render('contact::contact-form', [
             'form' => $form,
             'recaptchaSiteKey' => $this->config['recaptcha']['siteKey']
+        ]));
+    }
+
+    public function productListAction(): ResponseInterface
+    {
+        $allProducts = $this->productService->getProcessedProducts();
+        if (isset($_POST['products'])) {
+            $cart = $_POST['products'];
+            $products = [];
+            foreach ($cart as $product) {
+                $products = $this->productService->getRepository()->find($product);
+            }
+            echo "<script>alert('order placed')</script>";
+        }
+        return new HtmlResponse($this->template->render('contact::products', [
+            'products' => $allProducts
+        ]));
+    }
+
+    public function cartAction(): ResponseInterface
+    {
+        if (isset($_POST['products'])) {
+            $cart = $_POST['products'];
+            $products = [];
+            foreach ($cart as $product) {
+                $products = $this->productService->getRepository()->find($product);
+            }
+        }
+
+        return new HtmlResponse($this->template->render('contact::cart', [
+            'products' => $products
         ]));
     }
 }
