@@ -33,7 +33,7 @@ class Cart extends AbstractEntity
     /**
      * @ORM\ManyToOne(targetEntity="Frontend\User\Entity\User", inversedBy="cart")
      * @ORM\JoinColumn(name="userUuid", referencedColumnName="uuid", nullable=false)
-     * @var UserInterface $user
+     * @var User $user
      */
     protected $user;
 

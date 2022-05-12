@@ -114,6 +114,7 @@ class User extends AbstractEntity implements UserInterface
         parent::__construct();
         $this->roles = new ArrayCollection();
         $this->resetPasswords = new ArrayCollection();
+        $this->cart = new ArrayCollection();
         $this->renewHash();
     }
 
@@ -427,7 +428,7 @@ class User extends AbstractEntity implements UserInterface
     /**
      * @return Cart
      */
-    public function getCart(): Cart
+    public function getCart(): ArrayCollection
     {
         return $this->cart;
     }

@@ -57,6 +57,13 @@ $(document).ready(function () {
             }
         });
     });
+    $("#cartDisplay").on('click', function() {
+        if ( $("#cartItemsDisplay").css("display") == "none") {
+            $("#cartItemsDisplay").show();
+        } else {
+            $("#cartItemsDisplay").hide();
+        }
+    });
 });
 
 function validateContactUsForm()

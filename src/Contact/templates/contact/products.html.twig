@@ -7,28 +7,46 @@
 
 {% block content %}
 
-    <span><h1 class="d-inline">Product List</h1><button class="btn btn-info d-inline mr-5" id="cartDisplay"
-                                                        style="float:right;width:75px;height:50px"><i
-                    class="fas fa-shopping-cart"></i></button></span>
+    <span>
+        <h1 class="d-inline">Product List</h1>
+        <button class="btn btn-info d-inline mr-5" id="cartDisplay" style="float:right;width:75px;height:50px">
+            <i class="fas fa-shopping-cart"></i>
+            <p style="color: white">{{ userCart|length }}</p>
+        </button>
+        <div id="cartItemsDisplay" style="border-radius:5px;display: none;border: 1px solid black; height: 350px;width: 350px; overflow-y: scroll; position: absolute;margin-left: 1530px;margin-top:2px ;background-color: lightgray">
+            {% for product in userCart %}
+                <div>
+                    <p style="color: #000;"><img src="{{product.image}}" alt="" style="width:35px;height:35px">Product:{{product.product}} | Price:{{product.price}}</p>
+                    <hr>
+                </div>
+            {% endfor %}
+            <form method="POST" id="emptyCartForm">
+                <input type="text" value="emptycart" hidden name="action">
+                 <button class="btn btn-info ml-2 mb-3" id="emptyCartButton" type="submit" {% if userCart|length == 0 %}hidden{% endif %}>Empty Cart</button>
+            </form>
+        </div>
+    </span>
     <hr>
     <div class="container">
-        {% for product in products %}
-            <div class="row">
-                <div class="col-12">
-                    <div class="card  bg-dark" style="">
-                        <img class="d-inline card-img-top" src="{{ product.image }}" alt="Card image cap">
-                        <span class="d-inline card-body">
-                        <h3 class="card-title text-white"><b>{{ product.product }}</b></h3>
-                        <p class="card-text description">{{ product.description }}</p>
-                        <h4 class="card-text text-info price">{{ product.price }} RON</h4>
+        {% for key, product in products %}
+        <ul class="list-group shadow">
+            <!-- list group item-->
+            <li class="list-group-item">
+                <!-- Custom content-->
+                <div class="media align-items-lg-center flex-column flex-lg-row p-3">
+                    <div class="media-body order-2 order-lg-1">
+                        <h5 class="mt-0 font-weight-bold mb-2">{{ product.product }}</h5>
+                        <p class="font-italic text-muted mb-0 small">{{ product.description }}</p>
+                        <div class="d-flex align-items-center justify-content-between mt-1">
+                            <h6 class="font-weight-bold my-2">{{ product.price }} RON</h6>
+                        </div>
                         <form action method="POST" enctype="multipart/form-data">
                             <input name="product" type="text" hidden value="{{ product.uuid }}" >
                             <input type="submit" value="Add to cart">
                         </form>
-                    </span>
-                    </div>
-                </div>
-            </div>
+                    </div><img src="{{ product.image }}" alt="Generic placeholder image" width="200" class="ml-lg-5 order-1 order-lg-2">
+                </div> <!-- End -->
+            </li>
             <br>
         {% endfor %}
     </div>

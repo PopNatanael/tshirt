@@ -149,21 +149,28 @@ class ContactController extends AbstractActionController
 
     public function productListAction(): ResponseInterface
     {
+
         $request = $this->getRequest();
 
         $identity = $this->authenticationService->getIdentity();
-
         /** @var User $user */
         $user = $this->userService->findByUuid($identity->getUuid());
-
         $allProducts = $this->productService->getProcessedProducts();
-
+        $userCart = $this->productService->getCartRepository()->getUserCartItems($user);
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
+            echo "<script>window.location.href='productList';</script>";
+
             $data = $request->getParsedBody();
-            $this->productService->processProduct($data, $user);
+            if (isset($data['action']) && $data['action'] === 'emptycart') {
+                $this->productService->getCartRepository()->emptyUserCart($user);
+            }
+            if (isset($data['product']) && !is_null($data['product'])) {
+                $this->productService->processProduct($data, $user);
+            }
         }
         return new HtmlResponse($this->template->render('contact::products', [
-            'products' => $allProducts
+            'products' => $allProducts,
+            'userCart' => $userCart
         ]));
     }
 

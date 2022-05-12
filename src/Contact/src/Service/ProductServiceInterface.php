@@ -3,6 +3,7 @@
 namespace Frontend\Contact\Service;
 
 use Frontend\Contact\Entity\Message;
+use Frontend\Contact\Repository\CartRepository;
 use Frontend\Contact\Repository\MessageRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Frontend\Contact\Repository\ProductRepository;
@@ -17,4 +18,9 @@ interface ProductServiceInterface
      * @return ProductRepository
      */
     public function getRepository(): ProductRepository;
+
+    /**
+     * @return CartRepository
+     */
+    public function getCartRepository(): CartRepository;
 }
