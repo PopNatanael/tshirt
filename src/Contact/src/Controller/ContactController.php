@@ -13,6 +13,8 @@ use Frontend\Contact\Form\ContactForm;
 use Frontend\Contact\Service\MessageService;
 use Frontend\Contact\Service\ProductServiceInterface;
 use Frontend\Plugin\FormsPlugin;
+use Frontend\User\Entity\User;
+use Frontend\User\Service\UserServiceInterface;
 use Laminas\Authentication\AuthenticationService;
 use Laminas\Authentication\AuthenticationServiceInterface;
 use Laminas\Diactoros\Response\HtmlResponse;
@@ -38,6 +40,10 @@ class ContactController extends AbstractActionController
     /** @var ProductServiceInterface $productService */
     protected ProductServiceInterface $productService;
 
+
+    /** @var UserServiceInterface $userService */
+    protected UserServiceInterface $userService;
+
     /** @var FlashMessenger $messenger */
     protected FlashMessenger $messenger;
 
@@ -54,6 +60,7 @@ class ContactController extends AbstractActionController
      * @param TemplateRendererInterface $template
      * @param AuthenticationService $authenticationService
      * @param ProductServiceInterface $productService
+     * @param UserServiceInterface $userService
      * @param FlashMessenger $messenger
      * @param FormsPlugin $forms
      * @Inject({
@@ -62,28 +69,30 @@ class ContactController extends AbstractActionController
      *     TemplateRendererInterface::class,
      *     AuthenticationService::class,
      *     ProductServiceInterface::class,
+     *     UserServiceInterface::class,
      *     FlashMessenger::class,
      *     FormsPlugin::class,
      *     "config"
      *     })
      */
     public function __construct(
-        MessageService            $messageService,
-        RouterInterface           $router,
+        MessageService $messageService,
+        RouterInterface $router,
         TemplateRendererInterface $template,
-        AuthenticationService     $authenticationService,
-        ProductServiceInterface   $productService,
-        FlashMessenger            $messenger,
-        FormsPlugin               $forms,
-        array                     $config = []
-    )
-    {
+        AuthenticationService $authenticationService,
+        ProductServiceInterface $productService,
+        UserServiceInterface $userService,
+        FlashMessenger $messenger,
+        FormsPlugin $forms,
+        array $config = []
+    ) {
         $this->messageService = $messageService;
         $this->router = $router;
         $this->template = $template;
         $this->authenticationService = $authenticationService;
         $this->productService = $productService;
         $this->messenger = $messenger;
+        $this->userService =$userService;
         $this->forms = $forms;
         $this->config = $config;
     }
@@ -140,14 +149,18 @@ class ContactController extends AbstractActionController
 
     public function productListAction(): ResponseInterface
     {
+        $request = $this->getRequest();
+
+        $identity = $this->authenticationService->getIdentity();
+
+        /** @var User $user */
+        $user = $this->userService->findByUuid($identity->getUuid());
+
         $allProducts = $this->productService->getProcessedProducts();
-        if (isset($_POST['products'])) {
-            $cart = $_POST['products'];
-            $products = [];
-            foreach ($cart as $product) {
-                $products = $this->productService->getRepository()->find($product);
-            }
-            echo "<script>alert('order placed')</script>";
+
+        if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
+            $data = $request->getParsedBody();
+            $this->productService->processProduct($data, $user);
         }
         return new HtmlResponse($this->template->render('contact::products', [
             'products' => $allProducts

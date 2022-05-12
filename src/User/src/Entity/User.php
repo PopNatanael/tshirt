@@ -10,6 +10,7 @@ use Frontend\App\Common\AbstractEntity;
 use Frontend\App\Common\UuidOrderedTimeGenerator;
 use Exception;
 
+use Frontend\Contact\Entity\Cart;
 use function array_map;
 use function bin2hex;
 use function random_bytes;
@@ -43,6 +44,12 @@ class User extends AbstractEntity implements UserInterface
      * @var UserDetail $detail
      */
     protected $detail;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Frontend\Contact\Entity\Cart", cascade={"persist", "remove"}, mappedBy="user")
+     * @var Cart $cart
+     */
+    protected $cart;
 
     /**
      * @ORM\OneToOne(targetEntity="Frontend\User\Entity\UserAvatar", cascade={"persist", "remove"}, mappedBy="user")
@@ -415,6 +422,22 @@ class User extends AbstractEntity implements UserInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @return Cart
+     */
+    public function getCart(): Cart
+    {
+        return $this->cart;
+    }
+
+    /**
+     * @param Cart $cart
+     */
+    public function setCart(Cart $cart): void
+    {
+        $this->cart = $cart;
     }
 
     /**

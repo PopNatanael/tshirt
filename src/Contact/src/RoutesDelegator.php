@@ -21,7 +21,6 @@ class RoutesDelegator
      */
     public function __invoke(ContainerInterface $container, $serviceName, callable $callback)
     {
-
         /** @var Application $app */
         $app = $callback();
 

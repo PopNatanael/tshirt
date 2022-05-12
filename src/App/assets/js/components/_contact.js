@@ -57,24 +57,6 @@ $(document).ready(function () {
             }
         });
     });
-
-    let products = [];
-    $('.cartButton').on('click', function() {
-        let productUuid = $(this).attr('data-uuid');
-        products.push(productUuid);
-        alert("Product added to cart");
-        console.log(products);
-    });
-
-    $('#cartDisplay').on('click', function() {
-        // window.location.href = "/contact/cart";
-        $.ajax({
-           type: "POST",
-           url: "/contact/productList",
-           products:products
-       });
-       sessionStorage.setItem("cartProducts", JSON.stringify(products));
-    });
 });
 
 function validateContactUsForm()
