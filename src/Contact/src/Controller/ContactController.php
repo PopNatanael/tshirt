@@ -9,6 +9,7 @@ use Dot\Controller\AbstractActionController;
 use Dot\FlashMessenger\FlashMessenger;
 use Dot\Mail\Exception\MailException;
 use Fig\Http\Message\RequestMethodInterface;
+use Frontend\Contact\Entity\Product;
 use Frontend\Contact\Form\ContactForm;
 use Frontend\Contact\Service\MessageService;
 use Frontend\Contact\Service\ProductServiceInterface;
@@ -21,6 +22,7 @@ use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
+use mysql_xdevapi\Exception;
 use Psr\Http\Message\ResponseInterface;
 
 class ContactController extends AbstractActionController
@@ -149,14 +151,13 @@ class ContactController extends AbstractActionController
 
     public function productListAction(): ResponseInterface
     {
-
         $request = $this->getRequest();
-
         $identity = $this->authenticationService->getIdentity();
         /** @var User $user */
         $user = $this->userService->findByUuid($identity->getUuid());
         $allProducts = $this->productService->getProcessedProducts();
         $userCart = $this->productService->getCartRepository()->getUserCartItems($user);
+        $totalPrice = $this->productService->getCartRepository()->getTotalPrice($user);
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
             echo "<script>window.location.href='productList';</script>";
 
@@ -167,10 +168,21 @@ class ContactController extends AbstractActionController
             if (isset($data['product']) && !is_null($data['product'])) {
                 $this->productService->processProduct($data, $user);
             }
+            if (isset($data['removedProductFromCart'])) {
+                $deletedProduct = $this->productService->getCartRepository()->find($data['removedProductFromCart']);
+                $this->productService->getCartRepository()->deleteUserCartProduct($deletedProduct);
+            }
+            if (isset($data['checkoutCart'])) {
+                return new RedirectResponse($this->router->generateUri("contact", ['action' => 'cartCheckout']));
+            }
+            if (isset($_POST['deleteCart'])) {
+                $this->productService->getCartRepository()->emptyUserCart($user);
+            }
         }
         return new HtmlResponse($this->template->render('contact::products', [
             'products' => $allProducts,
-            'userCart' => $userCart
+            'userCart' => $userCart,
+            'totalPrice' => $totalPrice
         ]));
     }
 
@@ -186,6 +198,36 @@ class ContactController extends AbstractActionController
 
         return new HtmlResponse($this->template->render('contact::cart', [
             'products' => $products
+        ]));
+    }
+
+    public function addProductAction(): ResponseInterface
+    {
+        $request = $this->getRequest();
+
+        if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
+            if (isset($_POST['productTitle']) && isset($_POST['imageLink']) && isset($_POST['productDescription']) && isset($_POST['productPrice'])) {
+                $product = new Product($_POST['productTitle'], $_POST['productPrice'], $_POST['productDescription'], $_POST['imageLink']);
+                $this->productService->getRepository()->saveProduct($product);
+            }
+        }
+        return new HtmlResponse($this->template->render('contact::add-product', [
+        ]));
+    }
+
+    public function cartCheckoutAction(): ResponseInterface
+    {
+        $request = $this->getRequest();
+        $identity = $this->authenticationService->getIdentity();
+        $user = $this->userService->findByUuid($identity->getUuid());
+        $totalPrice = $this->productService->getCartRepository()->getTotalPrice($user);
+        if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
+
+        }
+            $userCart = $this->productService->getCartRepository()->getUserCartItems($user);
+        return new HtmlResponse($this->template->render('contact::cart-checkout', [
+            'products' => $userCart,
+            'totalPrice' => $totalPrice
         ]));
     }
 }

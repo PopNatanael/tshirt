@@ -1,0 +1,42 @@
+{% extends '@layout/default.html.twig' %}
+
+{% block title %}Product List{% endblock %}
+{% block page_title %}{% endblock %}
+
+{% block body_class %}user-form{% endblock %}
+
+{% block content %}
+
+    <span><h1 class="d-inline">Add Product</h1></span>
+    <hr>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="container">
+                    <h3>Total Price: {{ totalPrice|round(2) }} RON</h3>
+                    {% for key, product in products %}
+                    <ul class="list-group shadow">
+                        <!-- list group item-->
+                        <li class="list-group-item">
+                            <!-- Custom content-->
+                            <div class="media align-items-lg-center flex-column flex-lg-row p-3">
+                                <div class="media-body order-2 order-lg-1">
+                                    <h5 class="mt-0 font-weight-bold mb-2">{{ product.product }}</h5>
+                                    <div class="d-flex align-items-center justify-content-between mt-1">
+                                        <h6 class="font-weight-bold my-2">{{ product.price }} RON</h6>
+                                    </div>
+                                </div><img src="{{ product.image }}" alt="Generic placeholder image" width="100" class="ml-lg-5 order-1 order-lg-2">
+                            </div> <!-- End -->
+                        </li>
+                        <br>
+                        {% endfor %}
+                    <form method="POST" enctype="multipart/form-data" action="{{ url('contact', {'action': 'productList'}) }}">
+                        <input type="submit" id="placeOrderButton" value="Place order" name="deleteCart">
+                    </form>
+                </div>
+            </div>
+        </div>
+        <br>
+    </div>
+
+{% endblock %}

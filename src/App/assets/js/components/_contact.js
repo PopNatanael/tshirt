@@ -64,6 +64,10 @@ $(document).ready(function () {
             $("#cartItemsDisplay").hide();
         }
     });
+
+    $("#placeOrderButton").on("click", function() {
+        alert("Order Placed");
+    });
 });
 
 function validateContactUsForm()

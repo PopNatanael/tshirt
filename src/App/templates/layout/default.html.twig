@@ -25,10 +25,9 @@
     <body class="app {% block body_class %}{% endblock %} language-{{ language_key }}">
         <div id="wrapper">
             <header class="app-header">
-
                 <nav class="navbar navbar-expand-md navbar-light bg-light">
                     <div class="container">
-                        <a href="/" class="navbar-brand">
+                        <a href="{{ url('contact', {'action': 'productList'}) }}" class="navbar-brand">
                             <img src="{{ asset('images/app/logo.svg') }}"
                                  onerror="this.onerror=null; this.src='{{ asset('images/app/logo.png') }}';"
                                  alt="DotKernel" />
@@ -43,12 +42,12 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ url('contact', {'action': 'productList'}) }}">{% trans 'Product List' %}</a></li>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url('contact', {'action': 'addProduct'}) }}">{% trans 'Add Product' %}</a></li>
+                                </li>
                             </ul>
                             <ul class="navbar-nav ml-auto">
                                 {% if hasIdentity() %}
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ url('account', {'action': 'details'}) }}">{% trans 'Profile' %}</a>
-                                    </li>
                                     <li class="nav-item">
                                         <a class="nav-link" href="{{ url('user', {'action': 'logout'}) }}">{% trans 'Log out' %}</a>
                                     </li>
@@ -89,23 +88,6 @@
                 </p>
             </div>
         </footer>
-
-        <div class="language-container">
-            <div class="languages">
-                <div class="language-active clearfix">
-                    <img src="{{ asset('images/app/flags/' ~ language_key ~ '.png') }}" alt="" />
-                    <div class="language-selector"></div>
-                </div>
-                <ul class="language-list">
-                    <li class="language language-en clearfix" data-language-key="en">
-                        <img src="{{ asset('images/app/flags/en.png') }}" alt="" /><span>EN</span>
-                    </li>
-                    <li class="language language-dk clearfix" data-language-key="dk">
-                        <img src="{{ asset('images/app/flags/dk.png') }}" alt="" /><span>DK</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
 
         <script src="{{ asset('js/app.js') }}"></script>
         {% block javascript %}{% endblock %}

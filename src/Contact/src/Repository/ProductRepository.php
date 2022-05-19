@@ -23,4 +23,10 @@ class ProductRepository extends EntityRepository
 
         return $qb->getQuery()->useQueryCache(true)->getResult();
     }
+
+    public function saveProduct(Product $product)
+    {
+        $this->getEntityManager()->persist($product);
+        $this->getEntityManager()->flush();
+    }
 }

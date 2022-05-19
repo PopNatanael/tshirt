@@ -8,21 +8,29 @@
 {% block content %}
 
     <span>
-        <h1 class="d-inline">Product List</h1>
+        <h1 class="d-inline"><b>Product List</b></h1>
         <button class="btn btn-info d-inline mr-5" id="cartDisplay" style="float:right;width:75px;height:50px">
             <i class="fas fa-shopping-cart"></i>
             <p style="color: white">{{ userCart|length }}</p>
         </button>
-        <div id="cartItemsDisplay" style="border-radius:5px;display: none;border: 1px solid black; height: 350px;width: 350px; overflow-y: scroll; position: absolute;margin-left: 1530px;margin-top:2px ;background-color: lightgray">
+        <div id="cartItemsDisplay" style="border-radius:5px;display: none;border: 1px solid black; height: 350px;width: 370px; overflow-y: scroll; position: absolute;margin-left: 1530px;margin-top:2px ;background-color: lightgray">
             {% for product in userCart %}
                 <div>
-                    <p style="color: #000;"><img src="{{product.image}}" alt="" style="width:35px;height:35px">Product:{{product.product}} | Price:{{product.price}}</p>
+                    <form method="POST">
+                    <p style="color: #000;"><img src="{{product.image}}" alt="" style="width:35px;height:35px">Product: {{product.product}} | Price: {{product.price}} <button type="submit" class="btn bg-transparent" title="remove product from cart">X</button></p>
+                        <input type="text" id="productUuid" hidden name="removedProductFromCart" value="{{ product.uuid }}">
+                    </form>
                     <hr>
                 </div>
             {% endfor %}
             <form method="POST" id="emptyCartForm">
                 <input type="text" value="emptycart" hidden name="action">
-                 <button class="btn btn-info ml-2 mb-3" id="emptyCartButton" type="submit" {% if userCart|length == 0 %}hidden{% endif %}>Empty Cart</button>
+                <p style="color:black">Total Price: {{ totalPrice|round(2) }} RON</p>
+                <button class="btn btn-info ml-2 mb-3" id="emptyCartButton" type="submit" {% if userCart|length == 0 %}hidden{% endif %}>Empty cart</button>
+            </form>
+            <form method="POST" id="emptyCartForm" action="{{ url('contact', {'action': 'cartCheckout'}) }}">
+                <input type="text" value="checkoutCart" hidden name="checkoutCart">
+                <button class="btn btn-info ml-2 mb-3" id="checkoutButton" type="submit" {% if userCart|length == 0 %}hidden{% endif %}>Place order</button>
             </form>
         </div>
     </span>

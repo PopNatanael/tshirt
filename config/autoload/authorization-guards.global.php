@@ -37,6 +37,15 @@ return [
                                         'premium-content'
                                     ],
                                     'permissions' => ['premium']
+                                ],
+                                [
+                                    'route' => 'contact',
+                                    'actions' => [
+                                        'addProduct',
+                                        'productList',
+                                        'cartCheckout'
+                                    ],
+                                    'permissions' => ['authenticated']
                                 ]
                             ],
                         ]
