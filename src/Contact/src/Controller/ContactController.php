@@ -160,7 +160,7 @@ class ContactController extends AbstractActionController
         $userCart = $this->productService->getCartRepository()->getUserCartItems($user);
         $totalPrice = $this->productService->getCartRepository()->getTotalPrice($user);
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
-            echo "<script>window.location.href='productList';</script>";
+//            echo "<script>window.location.href='productList';</script>";
 
             $data = $request->getParsedBody();
             if (isset($data['action']) && $data['action'] === 'emptycart') {
@@ -210,27 +210,9 @@ class ContactController extends AbstractActionController
         $form = new UploadAvatarForm();
 
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
-            $file = $this->request->getUploadedFiles()['avatar']['file'] ?? '';
-            var_dump();
-            file_put_contents( dirname(__FILE__).'/../../../../public/images/image.png', $file);
-            if ($file->getSize() === 0) {
-                $this->messenger->addWarning('Please select a file for upload.', 'profile-avatar');
-                return new RedirectResponse($this->router->generateUri(
-                    "contact",
-                    ['action' => 'addProduct']
-                ));
-            }
-            try {
-                $this->userService->updateUser($user, ['avatar' => $file]);
-            } catch (Exception $e) {
-                $this->messenger->addError('Something went wrong updating your profile image!', 'profile-avatar');
-                return new RedirectResponse($this->router->generateUri(
-                    "account",
-                    ['action' => 'avatar']
-                ));
-            }
-            if (isset($_POST['productTitle']) && isset($_POST['avatar']['image']) && isset($_POST['productDescription']) && isset($_POST['productPrice'])) {
-                $product = new Product($_POST['productTitle'], $_POST['productPrice'], $_POST['productDescription'], $_POST['avatar']['image']);
+
+            if (isset($_POST['productTitle']) && isset($_POST['imageLink']) && isset($_POST['productDescription']) && isset($_POST['productPrice'])) {
+                $product = new Product($_POST['productTitle'], $_POST['productPrice'], $_POST['productDescription'], $_POST['imageLink']);
                 $this->productService->getRepository()->saveProduct($product);
             }
         }

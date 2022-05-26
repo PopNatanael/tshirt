@@ -38,6 +38,29 @@ class Cart extends AbstractEntity
     protected $user;
 
     /**
+     * @return Product
+     */
+    public function getProductUuid(): Product
+    {
+        return $this->productUuid;
+    }
+
+    /**
+     * @param Product $productUuid
+     */
+    public function setProductUuid(Product $productUuid): void
+    {
+        $this->productUuid = $productUuid;
+    }
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Frontend\Contact\Entity\Product", inversedBy="cart")
+     * @ORM\JoinColumn(name="productUuid", referencedColumnName="uuid", nullable=false)
+     * @var Product $productUuid
+     */
+    protected $productUuid;
+
+    /**
      * @ORM\Column(name="product", type="string", length=150)
      * @var string
      */

@@ -95,6 +95,7 @@ class ProductService implements ProductServiceInterface
         );
         $cart->setUser($user);
 
+        $cart->setProductUuid($data);
         $this->getCartRepository()->saveCart($cart);
     }
 
