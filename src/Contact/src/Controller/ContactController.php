@@ -160,7 +160,7 @@ class ContactController extends AbstractActionController
         $userCart = $this->productService->getCartRepository()->getUserCartItems($user);
         $totalPrice = $this->productService->getCartRepository()->getTotalPrice($user);
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
-//            echo "<script>window.location.href='productList';</script>";
+            echo "<script>window.location.href='productList';</script>";
 
             $data = $request->getParsedBody();
             if (isset($data['action']) && $data['action'] === 'emptycart') {
@@ -183,7 +183,8 @@ class ContactController extends AbstractActionController
         return new HtmlResponse($this->template->render('contact::products', [
             'products' => $allProducts,
             'userCart' => $userCart,
-            'totalPrice' => $totalPrice
+            'totalPrice' => $totalPrice,
+            'config' => $this->config
         ]));
     }
 
@@ -210,13 +211,22 @@ class ContactController extends AbstractActionController
         $form = new UploadAvatarForm();
 
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
-
-            if (isset($_POST['productTitle']) && isset($_POST['imageLink']) && isset($_POST['productDescription']) && isset($_POST['productPrice'])) {
-                $product = new Product($_POST['productTitle'], $_POST['productPrice'], $_POST['productDescription'], $_POST['imageLink']);
+            $length = 10;
+            $randomString = substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                ceil($length/strlen($x)) )),1,$length);
+            $tempPath = $_FILES['imageLink']['tmp_name'];
+            $fileName = $_FILES['imageLink']['name'];
+            $destPath = '/var/www/html/proiectscrum/src/App/assets/images/productImages/'."$randomString$fileName";
+            if (move_uploaded_file($tempPath, $destPath)) {
+                $imageLink = $randomString.$fileName;
+                $product = new Product($_POST['productTitle'], $_POST['productPrice'], $_POST['productDescription'], $imageLink);
                 $this->productService->getRepository()->saveProduct($product);
             }
         }
-        return new HtmlResponse($this->template->render('contact::add-product', [ 'form' => $form, 'user' =>$user
+        return new HtmlResponse($this->template->render('contact::add-product', [
+            'form' => $form,
+            'user' => $user,
+            'config' => $this->config
         ]));
     }
 
@@ -226,13 +236,11 @@ class ContactController extends AbstractActionController
         $identity = $this->authenticationService->getIdentity();
         $user = $this->userService->findByUuid($identity->getUuid());
         $totalPrice = $this->productService->getCartRepository()->getTotalPrice($user);
-        if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
-
-        }
             $userCart = $this->productService->getCartRepository()->getUserCartItems($user);
         return new HtmlResponse($this->template->render('contact::cart-checkout', [
             'products' => $userCart,
-            'totalPrice' => $totalPrice
+            'totalPrice' => $totalPrice,
+            'config' => $this->config
         ]));
     }
 }

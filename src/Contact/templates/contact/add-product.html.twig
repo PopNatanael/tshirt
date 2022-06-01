@@ -1,6 +1,6 @@
 {% extends '@layout/default.html.twig' %}
 
-{% block title %}Product List{% endblock %}
+{% block title %}Add Products{% endblock %}
 {% block page_title %}{% endblock %}
 
 {% block body_class %}user-form{% endblock %}
@@ -12,14 +12,14 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <form method="POST" id="addProductorm">
-                    <label for="productTitle">Product name</label>
+                <form method="POST" id="addProductorm" enctype="multipart/form-data">
+                    <label for="productTitle" class="text-dark"><h6><b>Product name</b></h6></label>
                     <input class="form-control" type="text" id="productTitle" name="productTitle" style="width:550px" maxlength="150" required placeholder="Product title">
-                    <label for="imageLink">Product image</label>
-                    <input class="form-control" type="text" id="imageLink" name="imageLink" style="width:550px" maxlength="500" required placeholder="Product image link">
-                    <label for="productDescription">Product description</label>
+                    <label for="imageLink" class="text-dark "><h6><b>Product image</b></h6></label>
+                    <input class="form-control mb-2" type="file" id="imageLink" name="imageLink" style="width:550px; background-color: transparent; border:0px;" maxlength="500" required placeholder="Product image link">
+                    <label for="productDescription" class="text-dark mt-1"><h6><b>Product description</b></h6></label>
                     <textarea class="form-control" type="text" id="productDescription" name="productDescription" style="width:550px" required placeholder="Product description"></textarea>
-                    <label for="productPrice">Product price</label>
+                    <label for="productPrice" class="text-dark"><h6><b>Product price</b></h6></label>
                     <input class="form-control" type="number" id="productPrice" name="productPrice" style="width:550px" required placeholder="Product price" step="0.01"><br>
                     <button type="submit" class="btn btn-info">Add product</button>
                 </form>
