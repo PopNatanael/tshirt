@@ -66,7 +66,55 @@ $(document).ready(function () {
     });
 
     $("#placeOrderButton").on("click", function() {
-        alert("Order Placed");
+    });
+
+    $('#changeCurrency').on('click', function(e){
+        e.preventDefault();
+        if($("#cartTotalPrice").attr("data-currency") === "RON") {
+            let cartTotal = $("#cartTotalPrice").attr("data-price");
+            $("#cartTotalPrice").text("Total Price: " + Math.round((cartTotal / 4.94) * 100) / 100 + " €");
+            $("#cartTotalPrice").attr("data-price", Math.round((cartTotal / 4.94) * 100) / 100);
+            $("#cartTotalPrice").attr("data-currency", "€");
+            $("#cartTotalPrice").attr("data-total", Math.round((cartTotal / 4.94) * 100) / 100);
+        } else {
+            let cartTotal = $("#cartTotalPrice").attr("data-price");
+            $("#cartTotalPrice").text("Total Price: " + Math.round((cartTotal * 4.94)* 100) / 100 + " RON");
+            $("#cartTotalPrice").attr("data-price", Math.round((cartTotal * 4.94)* 100) / 100);
+            $("#cartTotalPrice").attr("data-currency", "RON");
+            $("#cartTotalPrice").attr("data-total", Math.round((cartTotal * 4.94)* 100) / 100);
+        }
+        $(".productPriceTags").map(function() {
+            if($(this).attr("data-currency") === "RON") {
+                let price = $(this).data("price");
+                $(this).text(Math.round((price / 4.94) * 100) / 100 + " €");
+                $(this).attr("data-currency", "€");
+                $(this).attr("data-price", Math.round((price / 4.94) * 100) / 100);
+
+            } else {
+                let price = $(this).attr("data-price");
+                $(this).text(Math.round(((price * 4.94)* 100) / 100) -0.01 + " RON");
+                $(this).attr("data-currency", "RON");
+                $(this).attr("data-price", Math.round((price * 4.94)* 100) / 100);
+
+            }
+        }).get();
+    });
+
+    $("#tvaButton").on("click", function () {
+        let totalPrice = parseFloat($("#cartTotalPrice").attr("data-total"));
+        if ($("#tvaButton").val() === "TVA price") {
+            let currentPrice = parseFloat($("#cartTotalPrice").attr("data-price"));
+                let TVA = Math.round((currentPrice - (1 / 10 * totalPrice)) * 100) / 100;
+            $("#cartTotalPrice").text("Total Price without TVA: " + TVA + $('#cartTotalPrice').attr("data-currency"));
+            $("#tvaButton").attr("value", "No TVA");
+            $("#cartTotalPrice").attr("data-price", TVA);
+        } else {
+            let currentPrice = parseFloat($("#cartTotalPrice").attr("data-price"));
+            let TVA = Math.round((currentPrice + (1 / 10 * totalPrice)) * 100) / 100;
+            $("#cartTotalPrice").text("Total Price: " + TVA + $('#cartTotalPrice').attr("data-currency"));
+            $("#tvaButton").attr("value", "TVA price");
+            $("#cartTotalPrice").attr("data-price", TVA);
+        }
     });
 });
 

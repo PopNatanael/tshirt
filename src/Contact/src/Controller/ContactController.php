@@ -194,7 +194,8 @@ class ContactController extends AbstractActionController
         return new HtmlResponse($this->template->render('contact::products', [
             'products' => $allProducts,
             'userCart' => $userCart,
-            'totalPrice' => $totalPrice
+            'totalPrice' => $totalPrice,
+            'config' => $this->config
         ]));
     }
 
@@ -221,13 +222,23 @@ class ContactController extends AbstractActionController
         $form = new UploadAvatarForm();
 
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
-
-            if (isset($_POST['productTitle']) && isset($_POST['imageLink']) && isset($_POST['productDescription']) && isset($_POST['productPrice'])) {
-                $product = new Product($_POST['productTitle'], $_POST['productPrice'], $_POST['productDescription'], $_POST['imageLink']);
+            $length = 10;
+            $randomString = substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                ceil($length/strlen($x)) )),1,$length);
+            $tempPath = $_FILES['imageLink']['tmp_name'];
+            $fileName = $_FILES['imageLink']['name'];
+            $destPath = '/var/www/html/proiectscrum/src/App/assets/images/productImages/'."$randomString$fileName";
+            if (move_uploaded_file($tempPath, $destPath)) {
+                $imageLink = $randomString.$fileName;
+                $product = new Product($_POST['productTitle'], $_POST['productPrice'], $_POST['productDescription'], $imageLink);
                 $this->productService->getRepository()->saveProduct($product);
             }
         }
-        return new HtmlResponse($this->template->render('contact::add-product', ['form' => $form, 'user' => $user
+
+        return new HtmlResponse($this->template->render('contact::add-product', [
+            'form' => $form,
+            'user' => $user,
+            'config' => $this->config
         ]));
     }
 
@@ -236,14 +247,17 @@ class ContactController extends AbstractActionController
         $request = $this->getRequest();
         $identity = $this->authenticationService->getIdentity();
         $user = $this->userService->findByUuid($identity->getUuid());
-        $totalPrice = $this->productService->getCartRepository()->getTotalPrice($user);
-        if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
-
-        }
         $userCart = $this->productService->getCartRepository()->getUserCartItems($user);
+        $totalPrice = 0;
+        /** @var Cart $product */
+        foreach ($userCart as $product) {
+            $totalPrice += $product->getProductUuid()->getPrice();
+        }
+
         return new HtmlResponse($this->template->render('contact::cart-checkout', [
             'products' => $userCart,
-            'totalPrice' => $totalPrice
+            'totalPrice' => $totalPrice,
+            'config' => $this->config
         ]));
     }
 }

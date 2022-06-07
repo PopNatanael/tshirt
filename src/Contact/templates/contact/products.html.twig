@@ -6,7 +6,9 @@
 {% block body_class %}user-form{% endblock %}
 
 {% block content %}
-
+    <form action="" type="POST">
+        <input type="submit" class="btn btn-info" style="width:95px;height:35px" value="RON/EURO" name="changeCurrency" id="changeCurrency">
+    </form>
     <span>
         <h1 class="d-inline"><b>Product List</b></h1>
         <button class="btn btn-info d-inline mr-5" id="cartDisplay" style="float:right;width:75px;height:50px">
@@ -17,7 +19,7 @@
             {% for product in userCart %}
                 <div>
                     <form method="POST">
-                    <p style="color: #000;"><img src="{{product.productUuid.image}}" alt="" style="width:35px;height:35px">Product: {{product.productUuid.product}} | Price: {{product.productUuid.price}} <button type="submit" class="btn bg-transparent" title="remove product from cart">X</button></p>
+                    <p style="color: #000;"><img src="{{ config.application.url }}{{ asset('images/app/productImages/'~product.image) }}" alt="" style="width:35px;height:35px">Product: {{product.productUuid.product}} | Price: {{product.productUuid.price}} <button type="submit" class="btn bg-transparent" title="remove product from cart">X</button></p>
                         <input type="text" id="productUuid" hidden name="removedProductFromCart" value="{{ product.productUuid.uuid }}">
                     </form>
                     <hr>
@@ -25,7 +27,7 @@
             {% endfor %}
             <form method="POST" id="emptyCartForm">
                 <input type="text" value="emptycart" hidden name="action">
-                <p style="color:black">Total Price: {{ totalPrice|round(2) }} RON</p>
+                <p style="color:black" id="cartTotalPrice" data-price="{{ totalPrice|round(2) }}" data-currency="RON" data-total="{{ totalPrice|round(2) }}">Total Price: {{ totalPrice|round(2) }} RON</p>
                 <button class="btn btn-info ml-2 mb-3" id="emptyCartButton" type="submit" {% if userCart|length == 0 %}hidden{% endif %}>Empty cart</button>
             </form>
             <form method="POST" id="emptyCartForm" action="{{ url('contact', {'action': 'cartCheckout'}) }}">
@@ -46,13 +48,14 @@
                         <h5 class="mt-0 font-weight-bold mb-2">{{ product.product }}</h5>
                         <p class="font-italic text-muted mb-0 small">{{ product.description }}</p>
                         <div class="d-flex align-items-center justify-content-between mt-1">
-                            <h6 class="font-weight-bold my-2">{{ product.price }} RON</h6>
+                            <h6 class="font-weight-bold my-2 productPriceTags" data-uuid="{{product.uuid}}" data-currency="RON" id="productPriceTag{{product.uuid}}" data-price="{{product.price}}">{{ product.price }} RON</h6>
                         </div>
                         <form action method="POST" enctype="multipart/form-data">
                             <input name="product" type="text" hidden value="{{ product.uuid }}" >
                             <input type="submit" value="Add to cart">
                         </form>
-                    </div><img src="{{ product.image }}" alt="Generic placeholder image" width="200" class="ml-lg-5 order-1 order-lg-2">
+
+                    </div><img src="{{ config.application.url }}{{ asset('images/app/productImages/'~product.image) }}" alt="Generic placeholder image" width="200" class="ml-lg-5 order-1 order-lg-2">
                 </div> <!-- End -->
             </li>
             <br>

@@ -6,14 +6,17 @@
 {% block body_class %}user-form{% endblock %}
 
 {% block content %}
+    <input type="submit" class="btn btn-info" style="width:95px;height:35px" value="RON/EURO" name="changeCurrency" id="changeCurrency">
+    <input type="submit" class="btn btn-info" style="width:95px;height:35px" value="TVA price" name="tvaButton" id="tvaButton">
 
+    <br>
     <span><h1 class="d-inline">Add Product</h1></span>
     <hr>
     <div class="container">
         <div class="row">
             <div class="col-12">
                 <div class="container">
-                    <h3>Total Price: {{ totalPrice|round(2) }} RON</h3>
+                    <h3 id="cartTotalPrice" data-price="{{ totalPrice|round(2) }}" data-currency="RON" data-total="{{ totalPrice|round(2) }}">Total Price: {{ totalPrice|round(2) }} RON</h3>
                     {% for key, product in products %}
                     <ul class="list-group shadow">
                         <!-- list group item-->
@@ -23,9 +26,9 @@
                                 <div class="media-body order-2 order-lg-1">
                                     <h5 class="mt-0 font-weight-bold mb-2">{{ product.product }}</h5>
                                     <div class="d-flex align-items-center justify-content-between mt-1">
-                                        <h6 class="font-weight-bold my-2">{{ product.price }} RON</h6>
+                                        <h6 class="font-weight-bold my-2 productPriceTags" data-currency="RON" id="productPriceTag{{product.uuid}}" data-price="{{product.price}}">{{ product.price }} RON</h6>
                                     </div>
-                                </div><img src="{{ product.image }}" alt="Generic placeholder image" width="100" class="ml-lg-5 order-1 order-lg-2">
+                                </div><img src="{{ config.application.url }}{{ asset('images/app/productImages/'~product.image) }}" alt="Generic placeholder image" width="100" class="ml-lg-5 order-1 order-lg-2">
                             </div> <!-- End -->
                         </li>
                         <br>
