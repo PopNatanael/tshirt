@@ -87,12 +87,7 @@ class ProductService implements ProductServiceInterface
         /** @var Product $data */
         $data = $this->getRepository()->findOneBy(['uuid' => $uuid['product'] ]);
 
-        $cart = new Cart(
-            $data->getProduct(),
-            $data->getPrice(),
-            $data->getDescription(),
-            $data->getImage()
-        );
+        $cart = new Cart();
         $cart->setUser($user);
 
         $cart->setProductUuid($data);

@@ -9,6 +9,7 @@ use Dot\Controller\AbstractActionController;
 use Dot\FlashMessenger\FlashMessenger;
 use Dot\Mail\Exception\MailException;
 use Fig\Http\Message\RequestMethodInterface;
+use Frontend\Contact\Entity\Cart;
 use Frontend\Contact\Entity\Product;
 use Frontend\Contact\Form\ContactForm;
 use Frontend\Contact\Service\MessageService;
@@ -79,23 +80,24 @@ class ContactController extends AbstractActionController
      *     })
      */
     public function __construct(
-        MessageService $messageService,
-        RouterInterface $router,
+        MessageService            $messageService,
+        RouterInterface           $router,
         TemplateRendererInterface $template,
-        AuthenticationService $authenticationService,
-        ProductServiceInterface $productService,
-        UserServiceInterface $userService,
-        FlashMessenger $messenger,
-        FormsPlugin $forms,
-        array $config = []
-    ) {
+        AuthenticationService     $authenticationService,
+        ProductServiceInterface   $productService,
+        UserServiceInterface      $userService,
+        FlashMessenger            $messenger,
+        FormsPlugin               $forms,
+        array                     $config = []
+    )
+    {
         $this->messageService = $messageService;
         $this->router = $router;
         $this->template = $template;
         $this->authenticationService = $authenticationService;
         $this->productService = $productService;
         $this->messenger = $messenger;
-        $this->userService =$userService;
+        $this->userService = $userService;
         $this->forms = $forms;
         $this->config = $config;
     }
@@ -158,11 +160,17 @@ class ContactController extends AbstractActionController
         $user = $this->userService->findByUuid($identity->getUuid());
         $allProducts = $this->productService->getProcessedProducts();
         $userCart = $this->productService->getCartRepository()->getUserCartItems($user);
-        $totalPrice = $this->productService->getCartRepository()->getTotalPrice($user);
+        $totalPrice = 0;
+        /** @var Cart $product */
+        foreach ($userCart as $product) {
+            $totalPrice += $product->getProductUuid()->getPrice();
+        }
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
-//            echo "<script>window.location.href='productList';</script>";
+            echo "<script>window.location.href='productList';</script>";
 
             $data = $request->getParsedBody();
+
+
             if (isset($data['action']) && $data['action'] === 'emptycart') {
                 $this->productService->getCartRepository()->emptyUserCart($user);
             }
@@ -170,7 +178,9 @@ class ContactController extends AbstractActionController
                 $this->productService->processProduct($data, $user);
             }
             if (isset($data['removedProductFromCart'])) {
-                $deletedProduct = $this->productService->getCartRepository()->find($data['removedProductFromCart']);
+                /** @var Cart $deletedProduct */
+                $deletedProduct = $this->productService->getCartRepository()
+                        ->findOneBy(['productUuid' => $data['removedProductFromCart'], 'user' => $user]);
                 $this->productService->getCartRepository()->deleteUserCartProduct($deletedProduct);
             }
             if (isset($data['checkoutCart'])) {
@@ -179,6 +189,7 @@ class ContactController extends AbstractActionController
             if (isset($_POST['deleteCart'])) {
                 $this->productService->getCartRepository()->emptyUserCart($user);
             }
+
         }
         return new HtmlResponse($this->template->render('contact::products', [
             'products' => $allProducts,
@@ -216,7 +227,7 @@ class ContactController extends AbstractActionController
                 $this->productService->getRepository()->saveProduct($product);
             }
         }
-        return new HtmlResponse($this->template->render('contact::add-product', [ 'form' => $form, 'user' =>$user
+        return new HtmlResponse($this->template->render('contact::add-product', ['form' => $form, 'user' => $user
         ]));
     }
 
@@ -229,7 +240,7 @@ class ContactController extends AbstractActionController
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
 
         }
-            $userCart = $this->productService->getCartRepository()->getUserCartItems($user);
+        $userCart = $this->productService->getCartRepository()->getUserCartItems($user);
         return new HtmlResponse($this->template->render('contact::cart-checkout', [
             'products' => $userCart,
             'totalPrice' => $totalPrice

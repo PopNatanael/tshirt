@@ -75,12 +75,12 @@ class CartRepository extends EntityRepository
         return $qb->getQuery()->useQueryCache(true)->getResult();
     }
 
-    public function deleteUserCartProduct(Cart $product)
+    public function deleteUserCartProduct(Cart $cart)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->delete(Cart::class, 'cart')
-            ->where('cart.uuid = :product')
-            ->setParameter('product', $product->getUuid(), UuidBinaryOrderedTimeType::NAME);
+            ->where('cart.uuid = :cart')
+            ->setParameter('cart', $cart->getUuid(), UuidBinaryOrderedTimeType::NAME);
 
         return $qb->getQuery()->useQueryCache(true)->getResult();
     }

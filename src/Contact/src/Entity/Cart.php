@@ -31,11 +31,27 @@ class Cart extends AbstractEntity
     public const PLATFORM_ADMIN = 'admin';
 
     /**
-     * @ORM\ManyToOne(targetEntity="Frontend\User\Entity\User", inversedBy="cart")
+     * @ORM\ManyToOne(targetEntity="Frontend\User\Entity\User", inversedBy="user")
      * @ORM\JoinColumn(name="userUuid", referencedColumnName="uuid", nullable=false)
      * @var User $user
      */
     protected $user;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Frontend\Contact\Entity\Product", inversedBy="product")
+     * @ORM\JoinColumn(name="productUuid", referencedColumnName="uuid", nullable=false)
+     * @var Product $productUuid
+     */
+    protected $productUuid;
+
+
+    /**
+     * Message constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
     /**
      * @return Product
@@ -54,82 +70,6 @@ class Cart extends AbstractEntity
     }
 
     /**
-     * @ORM\ManyToOne(targetEntity="Frontend\Contact\Entity\Product", inversedBy="cart")
-     * @ORM\JoinColumn(name="productUuid", referencedColumnName="uuid", nullable=false)
-     * @var Product $productUuid
-     */
-    protected $productUuid;
-
-    /**
-     * @ORM\Column(name="product", type="string", length=150)
-     * @var string
-     */
-    protected $product;
-
-    /**
-     * @ORM\Column(name="price", type="float", length=10)
-     * @var float
-     */
-    protected $price;
-
-    /**
-     * @ORM\Column(name="description", type="text")
-     * @var string
-     */
-    protected $description;
-
-    /**
-     * @ORM\Column(name="image", type="string", length=500)
-     * @var string
-     */
-    protected $image;
-
-    /**
-     * Message constructor.
-     * @param string $product
-     * @param float $price
-     * @param string $description
-     * @param string $image
-     */
-    public function __construct(
-        string $product,
-        float $price,
-        string $description,
-        string $image
-    ) {
-        parent::__construct();
-
-        $this->product = $product;
-        $this->price = $price;
-        $this->description = $description;
-        $this->image = $image;
-    }
-
-    /**
-     * @return string
-     */
-    public function getProduct(): string
-    {
-        return $this->product;
-    }
-
-    /**
-     * @return float
-     */
-    public function getPrice(): float
-    {
-        return $this->price;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
-    /**
      * @return UserInterface
      */
     public function getUser(): UserInterface
@@ -143,10 +83,5 @@ class Cart extends AbstractEntity
     public function setUser(UserInterface $user): void
     {
         $this->user = $user;
-    }
-
-    public function getImage(): string
-    {
-        return $this->image;
     }
 }

@@ -17,8 +17,8 @@
             {% for product in userCart %}
                 <div>
                     <form method="POST">
-                    <p style="color: #000;"><img src="{{product.image}}" alt="" style="width:35px;height:35px">Product: {{product.product}} | Price: {{product.price}} <button type="submit" class="btn bg-transparent" title="remove product from cart">X</button></p>
-                        <input type="text" id="productUuid" hidden name="removedProductFromCart" value="{{ product.uuid }}">
+                    <p style="color: #000;"><img src="{{product.productUuid.image}}" alt="" style="width:35px;height:35px">Product: {{product.productUuid.product}} | Price: {{product.productUuid.price}} <button type="submit" class="btn bg-transparent" title="remove product from cart">X</button></p>
+                        <input type="text" id="productUuid" hidden name="removedProductFromCart" value="{{ product.productUuid.uuid }}">
                     </form>
                     <hr>
                 </div>
